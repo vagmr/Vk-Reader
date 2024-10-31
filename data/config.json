@@ -1,0 +1,22 @@
+{
+  "savePath": "",
+  "saveFormat": "epub",
+  "threadCount": 3,
+  "convertType": {
+    "txt": "txt",
+    "epub": "epub",
+    "html": "html"
+  },
+  "delay": {
+    "min": 50,
+    "max": 150
+  },
+  "retryConfig": {
+    "maxRetries": 0,
+    "retryDelay": 0
+  },
+  "logConfig": {
+    "enabled": false,
+    "level": ""
+  }
+}

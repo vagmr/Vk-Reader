@@ -1,0 +1,19 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "EasyReader",
+  "outputfilename": "EasyReader",
+  "frontend:install": "pnpm install",
+  "frontend:build": "yarn build",
+  "frontend:dev:watcher": "yarn dev",
+  "frontend:dev:serverUrl": "auto",
+  "author": {
+    "name": "vagmr"
+  },
+  "info": {
+    "productName": "EasyReader",
+    "comments": "A modern desktop reader for Windows",
+    "companyName": "vagmr",
+    "copyright": "© 2024 vagmr",
+    "productVersion": "1.0.0"
+  }
+}
