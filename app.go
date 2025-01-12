@@ -175,7 +175,6 @@ func (a *App) SaveConfig(config Config) error {
 	return os.WriteFile(configPath, data, 0644)
 }
 
-// SearchBooks 搜索书籍
 func (a *App) SearchBooks(keyword string) ([]Book, error) {
 	url := fmt.Sprintf("https://api5-normal-lf.fqnovel.com/reading/bookapi/search/page/v/?query=%s&aid=1967&channel=0&os_version=0&device_type=0&device_platform=0&iid=466614321180296", keyword)
 
@@ -244,7 +243,6 @@ func (a *App) DownloadBook(bookID string, format string) error {
 	return nil
 }
 
-// getBookDetail 获取书籍详细信息
 func (a *App) getBookDetail(bookID string) (*BookDetail, error) {
 	url := fmt.Sprintf("https://fanqienovel.com/page/%s", bookID)
 
@@ -289,7 +287,6 @@ func (a *App) getBookDetail(bookID string) (*BookDetail, error) {
 	}, nil
 }
 
-// downloadChapters 下载所有章节
 func (a *App) downloadChapters(book *BookDetail) error {
 	config, err := a.GetConfig()
 	if err != nil {
@@ -345,7 +342,6 @@ func (a *App) downloadChapters(book *BookDetail) error {
 	totalChapters := len(book.Chapters)
 	completedChapters := 0
 
-	// 收集结果时添加进度通知
 	for i := 0; i < len(book.Chapters); i++ {
 		result := <-results
 		if result.Error != nil {
@@ -363,7 +359,6 @@ func (a *App) downloadChapters(book *BookDetail) error {
 		chapter.Content = result.Content
 		book.Chapters[result.Title] = chapter
 
-		// 发送进度通知
 		a.NotifyProgress(DownloadProgress{
 			Total:        totalChapters,
 			Current:      completedChapters,
@@ -404,12 +399,10 @@ func (a *App) saveAsTxt(book *BookDetail) error {
 		return err
 	}
 
-	// 确保保存目存在
 	if err := os.MkdirAll(config.SavePath, 0755); err != nil {
 		return err
 	}
 
-	// 创建文件
 	filename := filepath.Join(config.SavePath, sanitizeFilename(book.Title+".txt"))
 	file, err := os.Create(filename)
 	if err != nil {
@@ -419,11 +412,9 @@ func (a *App) saveAsTxt(book *BookDetail) error {
 
 	// 写入内容
 	for _, chapter := range sortChapters(book.Chapters) {
-		// 写入章节标题
 		if _, err := file.WriteString("\n" + chapter.Title + "\n\n"); err != nil {
 			return err
 		}
-		// 写入章节内容
 		if _, err := file.WriteString(chapter.Content + "\n"); err != nil {
 			return err
 		}
@@ -439,21 +430,16 @@ func (a *App) saveAsEpub(book *BookDetail) error {
 		return err
 	}
 
-	// 创建新的epub书
 	e := epub.NewEpub(book.Title)
 
 	// 设置元数据
 	e.SetLang("zh")
 	e.SetAuthor("Unknown") // TODO: 添加作者信息
 
-	// 添加章节
 	for _, chapter := range sortChapters(book.Chapters) {
-		// 将章节内容转换为HTML格式
 		content := fmt.Sprintf("<h1>%s</h1><div>%s</div>",
 			chapter.Title,
 			strings.ReplaceAll(chapter.Content, "\n", "<br/>"))
-
-		// 添加章节到epub
 		_, err := e.AddSection(content, chapter.Title, "", "")
 		if err != nil {
 			return err
